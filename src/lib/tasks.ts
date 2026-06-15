@@ -3,47 +3,23 @@ import { daysUntil } from './format';
 
 export function makeTasks(rows: TaxPeriodResult[], s: TaxYearSettings, done: string[] = []): CalendarTask[] {
   const base: CalendarTask[] = rows.map((x) => ({
-    id: `pay-usn-${x.period}-${s.year}`,
+    id: `a-${x.period}-${s.year}`,
     type: x.period === 'year' ? 'pay_usn_year' : 'pay_usn_advance',
-    title: x.period === 'year' ? 'Итоговый УСН' : `Аванс УСН: ${x.label}`,
-    description: 'Расчёт по доходам и уменьшению на взносы.',
+    title: x.period,
+    description: 'Auto task',
     amount: x.taxToPay,
     dueDate: x.dueDate,
-    status: status(`pay-usn-${x.period}-${s.year}`, x.dueDate, x.taxToPay, done),
+    status: status(`a-${x.period}-${s.year}`, x.dueDate, x.taxToPay, done),
   }));
 
   const extra = rows.at(-1)?.additionalContribution ?? 0;
+  const other: CalendarTask[] = [
+    { id: `b-${s.year}`, type: 'pay_fixed_contribution', title: 'Fixed', description: 'Auto task', amount: s.fixedContribution, dueDate: s.fixedContributionDueDate, status: status(`b-${s.year}`, s.fixedContributionDueDate, s.fixedContribution, done) },
+    { id: `c-${s.year}`, type: 'pay_additional_contribution', title: 'Extra', description: 'Auto task', amount: extra, dueDate: s.additionalContributionDueDate, status: status(`c-${s.year}`, s.additionalContributionDueDate, extra, done) },
+    { id: `d-${s.year}`, type: 'submit_declaration', title: 'Declaration', description: 'Draft data', amount: 0, dueDate: s.usnDeclarationDueDate, status: status(`d-${s.year}`, s.usnDeclarationDueDate, 1, done) },
+  ];
 
-  return [
-    ...base,
-    {
-      id: `pay-fixed-${s.year}`,
-      type: 'pay_fixed_contribution',
-      title: 'Фиксированные взносы',
-      description: 'Обязательный платёж ИП за себя.',
-      amount: s.fixedContribution,
-      dueDate: s.fixedContributionDueDate,
-      status: status(`pay-fixed-${s.year}`, s.fixedContributionDueDate, s.fixedContribution, done),
-    },
-    {
-      id: `pay-extra-${s.year}`,
-      type: 'pay_additional_contribution',
-      title: 'Дополнительный 1%',
-      description: 'Считается с дохода сверх порога.',
-      amount: extra,
-      dueDate: s.additionalContributionDueDate,
-      status: status(`pay-extra-${s.year}`, s.additionalContributionDueDate, extra, done),
-    },
-    {
-      id: `submit-declaration-${s.year}`,
-      type: 'submit_declaration',
-      title: 'Декларация УСН',
-      description: 'MVP готовит черновик данных.',
-      amount: 0,
-      dueDate: s.usnDeclarationDueDate,
-      status: status(`submit-declaration-${s.year}`, s.usnDeclarationDueDate, 1, done),
-    },
-  ].sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+  return [...base, ...other].sort((a, b) => a.dueDate.localeCompare(b.dueDate));
 }
 
 function status(id: string, dueDate: string, amount: number, done: string[]): CalendarTask['status'] {
