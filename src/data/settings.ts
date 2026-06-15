@@ -1,0 +1,15 @@
+export const SETTINGS_2026 = {
+  year: 2026,
+  usnIncomeRate: 6,
+  fixedContribution: 57390,
+  additionalContributionRate: 1,
+  additionalContributionThreshold: 300000,
+  additionalContributionMax: 321818,
+  usnQ1DueDate: '2026-04-28',
+  usnH1DueDate: '2026-07-28',
+  usn9mDueDate: '2026-10-28',
+  usnYearDueDate: '2027-04-28',
+  usnDeclarationDueDate: '2027-04-25',
+  fixedContributionDueDate: '2026-12-28',
+  additionalContributionDueDate: '2027-07-01',
+} as const;
