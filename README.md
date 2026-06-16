@@ -14,14 +14,23 @@ MVP веб-приложения «Бух2»: онлайн-кабинет для 
 
 ## Этап 2
 
-Добавлен Supabase-слой:
-
 - Supabase Auth через REST API без дополнительного SDK.
 - Таблицы PostgreSQL для profiles, ip_profiles, income_transactions, tax_year_settings, tax_calculations, calendar_tasks, audit_logs.
 - RLS-политики: пользователь видит и меняет только свои данные.
 - Триггер создания профиля после регистрации пользователя.
 - Сохранение профиля ИП, операций и выполненных задач в Supabase.
 - Локальный fallback: если ENV Supabase не заданы, приложение работает через localStorage.
+
+## Этап 3
+
+Добавлен импорт банковских выписок:
+
+- CSV, XLS и XLSX.
+- Автоопределение колонок date, amount, counterparty, description, inn.
+- Предпросмотр операций перед сохранением.
+- Массовое добавление импортированных операций.
+- Таблица import_batches и связь import_batch_id с income_transactions.
+- Импорт работает локально и через Supabase.
 
 ## ENV
 
@@ -45,22 +54,15 @@ npm run build
 
 ## Supabase
 
-Применить миграцию:
+Применить миграции:
 
 ```bash
 supabase db push
 ```
 
-Или выполнить SQL из файла:
-
-```text
-supabase/migrations/202606160001_stage2_auth_rls.sql
-```
-
 ## Следующие этапы
 
-1. Импорт банковских выписок CSV/XLSX.
-2. PDF/XLSX документы.
-3. Edge Functions для расчётов.
-4. ИИ через backend.
-5. ЮKassa и подписки.
+1. PDF/XLSX документы.
+2. Edge Functions для расчётов.
+3. ИИ через backend.
+4. ЮKassa и подписки.
