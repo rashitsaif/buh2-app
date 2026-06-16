@@ -40,6 +40,8 @@ type Result = {
   dueDate: string;
 };
 
+type RestClient = ReturnType<typeof createRestClient>;
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -80,29 +82,8 @@ Deno.serve(async (request) => {
     const settings = settingsRows[0] ?? defaultSettings(year, Number(profile.usn_rate));
     const results = calculate(incomes, profile, settings);
 
-    await db.delete(`tax_calculations?user_id=eq.${user.id}&year=eq.${year}`);
-    await db.post('tax_calculations', results.map((item) => ({
-      user_id: user.id,
-      year,
-      period: item.period,
-      income_total: item.incomeTotal,
-      usn_rate: Number(profile.usn_rate || settings.usn_income_rate),
-      usn_before_deduction: item.usnBeforeDeduction,
-      fixed_contribution: item.fixedContribution,
-      additional_contribution: item.additionalContribution,
-      deduction_applied: item.deductionApplied,
-      previous_payments: item.previousAccruedTax,
-      tax_to_pay: item.taxToPay,
-      calculation_json: item,
-    }))
-      .catch((error) => console.error('tax_calculations insert failed', error));
-
-    await db.post('audit_logs', [{
-      user_id: user.id,
-      action: 'calculate_tax',
-      entity_type: 'tax_calculation',
-      new_value: { year, periods: results.length },
-    }]).catch((error) => console.error('audit insert failed', error));
+    await saveCalculationRows(db, user.id, year, profile, settings, results);
+    await writeAuditLog(db, user.id, year, results.length);
 
     return json({ source: 'edge', year, generatedAt: new Date().toISOString(), results });
   } catch (error) {
@@ -110,6 +91,43 @@ Deno.serve(async (request) => {
     return json({ error: error instanceof Error ? error.message : 'Unexpected error' }, 500);
   }
 });
+
+async function saveCalculationRows(db: RestClient, userId: string, year: number, profile: DbProfile, settings: DbSettings, results: Result[]): Promise<void> {
+  await db.delete(`tax_calculations?user_id=eq.${userId}&year=eq.${year}`);
+  const rows = results.map((item) => ({
+    user_id: userId,
+    year,
+    period: item.period,
+    income_total: item.incomeTotal,
+    usn_rate: Number(profile.usn_rate || settings.usn_income_rate),
+    usn_before_deduction: item.usnBeforeDeduction,
+    fixed_contribution: item.fixedContribution,
+    additional_contribution: item.additionalContribution,
+    deduction_applied: item.deductionApplied,
+    previous_payments: item.previousAccruedTax,
+    tax_to_pay: item.taxToPay,
+    calculation_json: item,
+  }));
+
+  try {
+    await db.post('tax_calculations', rows);
+  } catch (error) {
+    console.error('tax_calculations insert failed', error);
+  }
+}
+
+async function writeAuditLog(db: RestClient, userId: string, year: number, periodsCount: number): Promise<void> {
+  try {
+    await db.post('audit_logs', [{
+      user_id: userId,
+      action: 'calculate_tax',
+      entity_type: 'tax_calculation',
+      new_value: { year, periods: periodsCount },
+    }]);
+  } catch (error) {
+    console.error('audit insert failed', error);
+  }
+}
 
 function calculate(incomes: DbIncome[], profile: DbProfile, settings: DbSettings): Result[] {
   let previousAccruedTax = 0;
