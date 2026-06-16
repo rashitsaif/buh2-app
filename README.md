@@ -59,13 +59,15 @@ VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=
 ```
 
-Edge Function secrets:
+Edge Function использует встроенные Supabase-переменные окружения:
 
 ```bash
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_URL
+SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
 ```
+
+Их не нужно задавать через `supabase secrets set`: имена с префиксом `SUPABASE_` зарезервированы Supabase.
 
 ## Запуск
 
@@ -86,12 +88,6 @@ npm run build
 
 ```bash
 supabase db push
-```
-
-Задать secret для Edge Function:
-
-```bash
-supabase secrets set SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
 ```
 
 Задеплоить функцию:
