@@ -23,14 +23,22 @@ MVP веб-приложения «Бух2»: онлайн-кабинет для 
 
 ## Этап 3
 
-Добавлен импорт банковских выписок:
-
-- CSV, XLS и XLSX.
+- CSV, XLS и XLSX импорт банковских выписок.
 - Автоопределение колонок date, amount, counterparty, description, inn.
 - Предпросмотр операций перед сохранением.
 - Массовое добавление импортированных операций.
 - Таблица import_batches и связь import_batch_id с income_transactions.
-- Импорт работает локально и через Supabase.
+
+## Этап 4
+
+Добавлена генерация документов:
+
+- income report XLSX;
+- KUDIR draft XLSX;
+- USN declaration draft XLSX;
+- invoice print/PDF draft;
+- act print/PDF draft;
+- таблица documents с RLS для будущего журнала документов.
 
 ## ENV
 
@@ -62,7 +70,6 @@ supabase db push
 
 ## Следующие этапы
 
-1. PDF/XLSX документы.
-2. Edge Functions для расчётов.
-3. ИИ через backend.
-4. ЮKassa и подписки.
+1. Edge Functions для расчётов.
+2. ИИ через backend.
+3. ЮKassa и подписки.
