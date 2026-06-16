@@ -31,8 +31,6 @@ MVP веб-приложения «Бух2»: онлайн-кабинет для 
 
 ## Этап 4
 
-Добавлена генерация документов:
-
 - income report XLSX;
 - KUDIR draft XLSX;
 - USN declaration draft XLSX;
@@ -40,11 +38,33 @@ MVP веб-приложения «Бух2»: онлайн-кабинет для 
 - act print/PDF draft;
 - таблица documents с RLS для будущего журнала документов.
 
+## Этап 5
+
+Добавлен backend-расчёт налогов через Supabase Edge Function:
+
+- `supabase/functions/calculate-tax/index.ts`;
+- JWT-проверка пользователя через Supabase Auth;
+- чтение `ip_profiles`, `income_transactions`, `tax_year_settings` на backend;
+- расчёт УСН, фиксированных взносов, 1% и уменьшения налога;
+- запись результата в `tax_calculations`;
+- запись события в `audit_logs`;
+- frontend вызывает Edge Function и использует локальный расчёт как fallback.
+
 ## ENV
+
+Frontend:
 
 ```bash
 VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=
+```
+
+Edge Function secrets:
+
+```bash
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
 ```
 
 ## Запуск
@@ -68,8 +88,20 @@ npm run build
 supabase db push
 ```
 
+Задать secret для Edge Function:
+
+```bash
+supabase secrets set SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+```
+
+Задеплоить функцию:
+
+```bash
+supabase functions deploy calculate-tax
+```
+
 ## Следующие этапы
 
-1. Edge Functions для расчётов.
-2. ИИ через backend.
-3. ЮKassa и подписки.
+1. ИИ через backend.
+2. ЮKassa и подписки.
+3. Админ-панель.
