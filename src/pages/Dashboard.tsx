@@ -1,46 +1,12 @@
-import { CalendarClock, Landmark, WalletCards } from 'lucide-react';
+import { ArrowRight, CalendarClock, CheckCircle2, FileCheck2, Landmark, Sparkles, TrendingUp, WalletCards } from 'lucide-react';
 import { MetricCard } from '../components/MetricCard';
 import type { CalendarTask, IpProfile, TaxPeriodResult } from '../types';
 import { formatDate, formatMoney } from '../lib/format';
 
-interface Props {
-  profile: IpProfile | null;
-  taxResults: TaxPeriodResult[];
-  tasks: CalendarTask[];
-  onStart: () => void;
-}
-
-export function Dashboard({ profile, taxResults, tasks, onStart }: Props) {
-  const year = taxResults.at(-1);
-  const nextTask = tasks.find((task) => task.status === 'soon' || task.status === 'planned' || task.status === 'overdue');
-
-  if (!profile) {
-    return (
-      <section className="card p-8 lg:p-10">
-        <p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">MVP</p>
-        <h2 className="mt-3 max-w-3xl text-4xl font-black leading-tight text-slate-950 lg:text-6xl">Buh2 dashboard</h2>
-        <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">Start with the profile setup.</p>
-        <button onClick={onStart} className="btn-primary mt-8">Setup profile</button>
-      </section>
-    );
-  }
-
-  return (
-    <section>
-      <div className="mb-8 flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">Dashboard</p>
-          <h2 className="mt-2 text-3xl font-black text-slate-950">{profile.ipFullName || 'Profile'}</h2>
-          <p className="mt-2 text-slate-600">Rate {profile.usnRate}% · no employees</p>
-        </div>
-        <button onClick={onStart} className="btn-secondary">Edit profile</button>
-      </div>
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard title="Income" value={formatMoney(year?.incomeTotal ?? 0)} caption="Included operations." icon={<WalletCards size={22} />} />
-        <MetricCard title="Base amount" value={formatMoney(year?.usnBeforeDeduction ?? 0)} caption="Calculated from the profile rate." icon={<Landmark size={22} />} />
-        <MetricCard title="Current amount" value={formatMoney(year?.taxToPay ?? 0)} caption="After deductions." icon={<Landmark size={22} />} />
-        <MetricCard title="Next date" value={nextTask ? formatDate(nextTask.dueDate) : '—'} caption={nextTask?.title ?? 'No urgent tasks.'} icon={<CalendarClock size={22} />} />
-      </div>
-    </section>
-  );
-}
+interface Props { profile: IpProfile | null; taxResults: TaxPeriodResult[]; tasks: CalendarTask[]; onStart: () => void; }
+const d=(s:string)=>new TextDecoder().decode(Uint8Array.from(atob(s),(c)=>c.charCodeAt(0)));
+const txt={badge:d('0J7QvdC70LDQudC9LdCx0YPRhdCz0LDQu9GC0LXRgCDQtNC70Y8g0JjQnyDQvdCwINCj0KHQnSA2JQ=='),h:d('0JHRg9GF0LPQsNC70YLQtdGA0LjRjyDQmNCfINCx0LXQtyDQsdGD0YXQs9Cw0LvRgtC10YDQsA=='),s:d('0JTQvtGF0L7QtNGLLCDQo9Ch0J0sINCy0LfQvdC+0YHRiywg0LTQvtC60YPQvNC10L3RgtGLINC4INGB0YDQvtC60Lgg4oCUINCyINC+0LTQvdC+0Lwg0LrQsNCx0LjQvdC10YLQtS4g0JfQsNC/0L7Qu9C90LjRgtC1INC/0YDQvtGE0LjQu9GMLCDQtNC+0LHQsNCy0YzRgtC1INC00L7RhdC+0LTRiyDQuCDQv9C+0LvRg9GH0LjRgtC1INC/0L7QvdGP0YLQvdGL0Lkg0L/Qu9Cw0L0g0LTQtdC50YHRgtCy0LjQuS4='),cta:d('0J3QsNGH0LDRgtGMINC90LDRgdGC0YDQvtC50LrRgyDQt9CwIDIg0LzQuNC90YPRgtGL'),inside:d('0KfRgtC+INCy0L3Rg9GC0YDQuCBNVlA='),tax:d('0J3QsNC70L7Qs9C+0LLRi9C5INGG0LXQvdGC0YA='),edit:d('0JjQt9C80LXQvdC40YLRjCDQv9GA0L7RhNC40LvRjA=='),rate:d('0KPQodCdIMKr0LTQvtGF0L7QtNGLwrssINGB0YLQsNCy0LrQsA=='),noemp:d('0LHQtdC3INGB0L7RgtGA0YPQtNC90LjQutC+0LI='),todo:d('0KfRgtC+INGB0LTQtdC70LDRgtGMINC00LDQu9GM0YjQtQ==')};
+const benefits=[['0KDQsNGB0YfRkdGCINCj0KHQnQ==','0JTQvtGF0L7QtNGLLCDRgdGC0LDQstC60LAsINCy0LfQvdC+0YHRiyDQuCDQuNGC0L7QsyDQuiDQvtC/0LvQsNGC0LUg0YHRh9C40YLQsNGO0YLRgdGPINCw0LLRgtC+0LzQsNGC0LjRh9C10YHQutC4Lg=='],['0JrQsNC70LXQvdC00LDRgNGM','0KHRgNC+0LrQuCDQv9C70LDRgtC10LbQtdC5INC4INC00LXQutC70LDRgNCw0YbQuNC4INGB0L7QsdGA0LDQvdGLINCyINC+0LTQvdC+0Lwg0LzQtdGB0YLQtS4='],['0JTQvtC60YPQvNC10L3RgtGL','0J7RgtGH0ZHRgiDQv9C+INC00L7RhdC+0LTQsNC8INC4INGH0LXRgNC90L7QstC40Log0LTQsNC90L3Ri9GFINGD0LbQtSDQsiBNVlAu'],['0J/QvtC80L7RidC90LjQug==','0J7QsdGK0Y/RgdC90Y/QtdGCINGA0LDRgdGH0ZHRgiDQuCDQv9C+0LrQsNC30YvQstCw0LXRgiDRgdC70LXQtNGD0Y7RidC40Lkg0YjQsNCzLg==']].map(([a,b])=>[d(a),d(b)] as const);
+const metric=['0JTQvtGF0L7QtNGLINCyINCx0LDQt9C1','0KPQodCdINC00L4g0YPQvNC10L3RjNGI0LXQvdC40Y8=','0Jog0L7Qv9C70LDRgtC1INGB0LXQudGH0LDRgQ==','0JHQu9C40LbQsNC50YjQuNC5INGB0YDQvtC6'].map(d);
+const cap=['0J7Qv9C10YDQsNGG0LjQuCDRgdC+INGB0YLQsNGC0YPRgdC+0Lwg0LLQutC70Y7Rh9C40YLRjC4=','0KDQsNGB0YfRkdGCINC/0L4g0YHRgtCw0LLQutC1INC/0YDQvtGE0LjQu9GPLg==','0J/QvtGB0LvQtSDRg9C80LXQvdGM0YjQtdC90LjRjyDQvdCwINCy0LfQvdC+0YHRiy4=','0KHRgNC+0YfQvdGL0YUg0LTQtdC50YHRgtCy0LjQuSDQvdC10YIu'].map(d);
+export function Dashboard({profile,taxResults,tasks,onStart}:Props){const year=taxResults.at(-1);const next=tasks.find((x)=>x.status==='soon'||x.status==='planned'||x.status==='overdue');if(!profile)return <section className="space-y-8"><div className="relative overflow-hidden rounded-[2rem] bg-slate-950 p-6 text-white shadow-soft sm:p-8 lg:p-12"><div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-white/10 blur-3xl"/><div className="relative grid gap-10 lg:grid-cols-[1fr_0.8fr] lg:items-center"><div><div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-bold"><Sparkles size={16}/>{txt.badge}</div><h1 className="max-w-4xl text-4xl font-black leading-[1.04] tracking-tight sm:text-5xl lg:text-6xl">{txt.h}</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">{txt.s}</p><button onClick={onStart} className="mt-8 inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 text-sm font-black text-slate-950 transition hover:bg-slate-100">{txt.cta}<ArrowRight size={18}/></button></div><div className="rounded-[1.75rem] border border-white/10 bg-white/10 p-5 backdrop-blur"><div className="rounded-[1.4rem] bg-white p-5 text-slate-950"><p className="text-sm font-bold text-slate-500">MVP</p><h3 className="text-2xl font-black">Buh2</h3><div className="mt-5 grid gap-3">{['USN','1%','Calendar'].map((x)=><div key={x} className="rounded-2xl bg-slate-100 p-4 text-sm font-black">{x}</div>)}</div></div></div></div></div><div id="value" className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">{benefits.map(([title,text])=><article key={title} className="card p-6"><div className="mb-4 inline-flex rounded-2xl bg-emerald-50 p-3 text-emerald-700"><CheckCircle2 size={22}/></div><h3 className="text-xl font-black text-slate-950">{title}</h3><p className="mt-3 text-sm leading-6 text-slate-600">{text}</p></article>)}</div><div className="card p-6 lg:p-8"><div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center"><div><p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">MVP</p><h2 className="mt-2 text-3xl font-black text-slate-950">{txt.inside}</h2></div><button onClick={onStart} className="btn-primary">{txt.cta}</button></div></div></section>;return <section className="space-y-6"><div className="rounded-[2rem] bg-slate-950 p-6 text-white shadow-soft lg:p-8"><div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end"><div><p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-400">{txt.tax}</p><h2 className="mt-2 text-3xl font-black lg:text-4xl">{profile.ipFullName||'IP'}</h2><p className="mt-3 text-slate-300">{txt.rate} {profile.usnRate}% · {txt.noemp}</p></div><button onClick={onStart} className="inline-flex items-center justify-center rounded-2xl bg-white px-5 py-3 text-sm font-black text-slate-950">{txt.edit}</button></div></div><div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4"><MetricCard title={metric[0]} value={formatMoney(year?.incomeTotal??0)} caption={cap[0]} icon={<WalletCards size={22}/>}/><MetricCard title={metric[1]} value={formatMoney(year?.usnBeforeDeduction??0)} caption={cap[1]} icon={<Landmark size={22}/>}/><MetricCard title={metric[2]} value={formatMoney(year?.taxToPay??0)} caption={cap[2]} icon={<TrendingUp size={22}/>}/><MetricCard title={metric[3]} value={next?formatDate(next.dueDate):'—'} caption={next?.title??cap[3]} icon={<CalendarClock size={22}/>}/></div><div className="card p-6"><div className="flex items-start gap-4"><div className="rounded-2xl bg-emerald-50 p-3 text-emerald-700"><FileCheck2 size={24}/></div><div><h3 className="text-xl font-black text-slate-950">{txt.todo}</h3>{next?<p className="mt-2 text-slate-600">{next.title}: {formatMoney(next.amount)} · {formatDate(next.dueDate)}.</p>:<p className="mt-2 text-slate-600">{cap[3]}</p>}</div></div></div></section>}
